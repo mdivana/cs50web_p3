@@ -33,6 +33,36 @@ function load_mailbox(mailbox) {
 
 	// Show the mailbox name
 	document.querySelector('#emails-view').innerHTML = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
+
+	// Show Inbox
+	fetch(`/emails/${mailbox}`)
+	.then(response => response.json())
+	.then(emails => {
+		emails.forEach(email => {
+
+			// Go over emails array and display each
+			const emailElement = document.createElement('div');
+			emailElement.classList.add('border', 'rounded', 'p-3', 'mb-3' );
+			emailElement.innerHTML = `
+				<h5>Sender: ${email.sender}</h5>
+				<h4>Subject: ${email.subject}</h4>
+				<p>${email.timestamp}</p>
+			`;
+
+			emailElement.addEventListener('click', function() {
+			    // TO-DO 
+				// Render email view with its content
+			});
+
+			// Set background color based on email.read value
+			emailElement.style.backgroundColor = email.read ? 'lightgray' : 'white';
+
+			// Add email view to page
+			document.querySelector('#emails-view').append(emailElement);
+		});
+	    // Print emails
+	    console.log(emails);
+	});
 }
 
 
