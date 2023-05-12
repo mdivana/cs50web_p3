@@ -86,6 +86,31 @@ function send_email() {
 	  .then(result => {
 		  // Print result
 		  console.log(result);
-		  load_mailbox(sent)
+		  load_mailbox("sent")
 	  });
+}
+
+
+function view_email(id) {
+	fetch(`/emails/${id}`)
+	.then(response => response.json())
+	.then(email => {
+
+		// Hide other stuff
+		document.querySelector('#emails-view').style.display = 'none';
+		document.querySelector('#compose-view').style.display = 'none';
+		document.querySelector('#email-detail-view').style.display = 'block';
+
+
+		// Display email
+		document.querySelector('#email-detail-view').innerHTML = `
+    		<ul class="list-group">
+        		<li class="list-group-item"><b>From:</b> <span>${email['sender']}</span></li>
+        		<li class="list-group-item"><b>To: </b><span>${email['recipients']}</span></li>
+        		<li class="list-group-item"><b>Subject:</b> <span>${email['subject']}</span</li>
+        		<li class="list-group-item"><b>Time:</b> <span>${email['timestamp']}</span></li>
+        		<li class="list-group-item"><br/>${email['body']}</li>
+      		</ul>
+    	`;
+	})
 }
