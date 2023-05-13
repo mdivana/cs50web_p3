@@ -18,6 +18,7 @@ function compose_email() {
 	// Show compose view and hide other views
 	document.querySelector('#emails-view').style.display = 'none';
 	document.querySelector('#compose-view').style.display = 'block';
+	document.querySelector('#email-detail').style.display = 'none';
 
 	// Clear out composition fields
 	document.querySelector('#compose-recipients').value = '';
@@ -30,6 +31,7 @@ function load_mailbox(mailbox) {
 	// Show the mailbox and hide other views
 	document.querySelector('#emails-view').style.display = 'block';
 	document.querySelector('#compose-view').style.display = 'none';
+	document.querySelector('#email-detail').style.display = 'none';
 
 	// Show the mailbox name
 	document.querySelector('#emails-view').innerHTML = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
@@ -49,10 +51,9 @@ function load_mailbox(mailbox) {
 				<p>${email.timestamp}</p>
 			`;
 
+			// Make each email to go to its own detailed page
 			emailElement.addEventListener('click', function() {
-			    // TO-DO 
-				// Render email view with its content
-			});
+				view_email(email.id)});
 
 			// Set background color based on email.read value
 			emailElement.style.backgroundColor = email.read ? 'lightgray' : 'white';
@@ -99,11 +100,11 @@ function view_email(id) {
 		// Hide other stuff
 		document.querySelector('#emails-view').style.display = 'none';
 		document.querySelector('#compose-view').style.display = 'none';
-		document.querySelector('#email-detail-view').style.display = 'block';
+		document.querySelector('#email-detail').style.display = 'block';
 
 
 		// Display email
-		document.querySelector('#email-detail-view').innerHTML = `
+		document.querySelector('#email-detail').innerHTML = `
     		<ul class="list-group">
         		<li class="list-group-item"><b>From:</b> <span>${email['sender']}</span></li>
         		<li class="list-group-item"><b>To: </b><span>${email['recipients']}</span></li>
@@ -112,5 +113,15 @@ function view_email(id) {
         		<li class="list-group-item"><br/>${email['body']}</li>
       		</ul>
     	`;
-	})
+
+		// Update if read
+		if(email.read === false) {
+			fetch(`/emails/${email.id}`, {
+				method: 'PUT',
+				body: JSON.stringify({
+					read: true
+				})
+			})
+		}
+	});
 }
