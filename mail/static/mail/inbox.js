@@ -18,7 +18,7 @@ function compose_email() {
 	// Show compose view and hide other views
 	document.querySelector('#emails-view').style.display = 'none';
 	document.querySelector('#compose-view').style.display = 'block';
-	document.querySelector('#email-detail').style.display = 'none';
+	document.querySelector('#detail-view').style.display = 'none';
 
 	// Clear out composition fields
 	document.querySelector('#compose-recipients').value = '';
@@ -31,7 +31,8 @@ function load_mailbox(mailbox) {
 	// Show the mailbox and hide other views
 	document.querySelector('#emails-view').style.display = 'block';
 	document.querySelector('#compose-view').style.display = 'none';
-	document.querySelector('#email-detail').style.display = 'none';
+	document.querySelector('#detail-view').style.display = 'none';
+
 
 	// Show the mailbox name
 	document.querySelector('#emails-view').innerHTML = `<h3>${mailbox.charAt(0).toUpperCase() + mailbox.slice(1)}</h3>`;
@@ -40,6 +41,7 @@ function load_mailbox(mailbox) {
 	fetch(`/emails/${mailbox}`)
 	.then(response => response.json())
 	.then(emails => {
+
 		emails.forEach(email => {
 
 			// Go over emails array and display each
@@ -52,7 +54,7 @@ function load_mailbox(mailbox) {
 			`;
 
 			// Make each email to go to its own detailed page
-			emailElement.addEventListener('click', function() {
+			emailElement.addEventListener("click", function() {
 				view_email(email.id)});
 
 			// Set background color based on email.read value
@@ -60,6 +62,7 @@ function load_mailbox(mailbox) {
 
 			// Add email view to page
 			document.querySelector('#emails-view').append(emailElement);
+
 		});
 	    // Print emails
 	    console.log(emails);
@@ -100,11 +103,10 @@ function view_email(id) {
 		// Hide other stuff
 		document.querySelector('#emails-view').style.display = 'none';
 		document.querySelector('#compose-view').style.display = 'none';
-		document.querySelector('#email-detail').style.display = 'block';
-
+		document.querySelector('#detail-view').style.display = 'block';
 
 		// Display email
-		document.querySelector('#email-detail').innerHTML = `
+		document.querySelector('#detail-view').innerHTML = `
     		<ul class="list-group">
         		<li class="list-group-item"><b>From:</b> <span>${email['sender']}</span></li>
         		<li class="list-group-item"><b>To: </b><span>${email['recipients']}</span></li>
@@ -119,9 +121,36 @@ function view_email(id) {
 			fetch(`/emails/${email.id}`, {
 				method: 'PUT',
 				body: JSON.stringify({
-					read: true
+					read: true,
 				})
 			})
+			.then(() => {
+				console.log(email);
+			});
 		}
+
+		// Add archive button
+		const btn_archive = document.createElement('button');
+		btn_archive.innerHTML = email.archived ? "Unarchive" : "Archive";
+		btn_archive.id = "btn_archive";
+		btn_archive.className = "btn btn-secondary m-3";
+		btn_archive.addEventListener("click", function() {
+			fetch(`/emails/${email.id}`, {
+				method: 'PUT',
+				body: JSON.stringify({
+					archived: !email.archived,
+				})
+			})
+			.then(() => {
+				console.log(email)
+				load_mailbox("inbox")
+			});
+		});
+
+		// Append button to only Inbox and Archive views
+		if(document.querySelector('#compose_sender').value !== email.sender){
+			document.querySelector('#detail-view').append(btn_archive);
+		}
+
 	});
 }
