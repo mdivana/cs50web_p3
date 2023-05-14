@@ -152,5 +152,21 @@ function view_email(id) {
 			document.querySelector('#detail-view').append(btn_archive);
 		}
 
+		// Add reply button
+		const btn_reply = document.createElement('button');
+		btn_reply.innerHTML = "Reply";
+		btn_reply.className = "btn btn-primary m-3"
+		btn_reply.addEventListener("click", function () {
+			compose_email();
+			// Prefill the composition form
+			document.querySelector('#compose-recipients').value = email.sender;
+			if(email.subject.split(' ')[0] !== 'Re:')
+				document.querySelector('#compose-subject').value = 'Re: ' + email.subject;
+			else
+				document.querySelector('#compose-subject').value = email.subject;
+			document.querySelector('#compose-body').value = 'On ' + email.timestamp + ' ' + email.sender + ' wrote: '+ email.body;
+		})
+		document.querySelector('#detail-view').append(btn_reply);
+
 	});
 }
