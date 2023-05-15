@@ -1,4 +1,4 @@
-# CS50web Project 3 Mail
+# CS50Web Project 3 Mail
 #### Description:
 This web app is created for CS50web
 
