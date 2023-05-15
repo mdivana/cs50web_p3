@@ -1,6 +1,7 @@
 # CS50web Project 3 Mail
 #### Description:
 This web app is created for CS50web
+
 Project has 2 different folders: mail and project3
 
 Mail folder is where web app functionality is. 
